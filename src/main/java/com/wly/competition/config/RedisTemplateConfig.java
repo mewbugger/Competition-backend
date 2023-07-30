@@ -1,4 +1,4 @@
-package com.wly.suepcompetition.config;
+package com.wly.competition.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
