@@ -143,7 +143,7 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public BaseResponse<Integer> updateUser(User user, HttpServletRequest request){
+    public BaseResponse<Integer> updateUser(@RequestBody User user, HttpServletRequest request){
         //校验参数是否为空
         if(user == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

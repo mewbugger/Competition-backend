@@ -127,9 +127,9 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             if(userId != null && userId > 0){
                 queryWrapper.eq("userId", userId);
             }
-            if (!isAdmin) {
-                throw new BusinessException(ErrorCode.NO_AUTH);
-            }
+//            if (!isAdmin) {
+//                throw new BusinessException(ErrorCode.NO_AUTH);
+//            }
         }
         // 不展示已过期的队伍
         // expireTime is null or expireTime > now()
