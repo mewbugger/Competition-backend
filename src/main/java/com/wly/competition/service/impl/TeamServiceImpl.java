@@ -154,6 +154,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 UserVO userVO = new UserVO();
                 BeanUtils.copyProperties(user, userVO);
                 teamUserVO.setCreateUser(userVO);
+                //teamUserVO.setHasJoin(true);
             }
             teamUserVOList.add(teamUserVO);
         }

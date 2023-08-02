@@ -120,7 +120,7 @@ public class TeamController {
             userTeamQueryWrapper.in("teamId", teamIdList);
             List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
             //已加入的队伍的id集合
-            Set<Long> hasJoinTeamIdSet = userTeamList.stream().map(UserTeam::getId).collect(Collectors.toSet());
+            Set<Long> hasJoinTeamIdSet = userTeamList.stream().map(UserTeam::getTeamId).collect(Collectors.toSet());
             //这里的teamList中的类型是TeamUserVO（队伍和用户信息封装类（脱敏））
             teamList.forEach(team -> {
                 boolean hasJoin = hasJoinTeamIdSet.contains(team.getId());
@@ -132,7 +132,7 @@ public class TeamController {
         userTeamJoinQueryWrapper.in("teamId", teamIdList);
         List<UserTeam> userTeamList = userTeamService.list(userTeamJoinQueryWrapper);
         // 队伍 id => 加入这个队伍的用户列表
-        Map<Long, List<UserTeam>> teamIdUserTeamList = userTeamList.stream().collect(Collectors.groupingBy(UserTeam::getId));
+        Map<Long, List<UserTeam>> teamIdUserTeamList = userTeamList.stream().collect(Collectors.groupingBy(UserTeam::getTeamId));
         teamList.forEach(team -> team.setHasJoinNum(teamIdUserTeamList.getOrDefault(team.getId(), new ArrayList<>()).size()));
         return ResultUtils.success(teamList);
     }
