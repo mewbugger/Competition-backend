@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -154,7 +151,6 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
                 UserVO userVO = new UserVO();
                 BeanUtils.copyProperties(user, userVO);
                 teamUserVO.setCreateUser(userVO);
-                //teamUserVO.setHasJoin(true);
             }
             teamUserVOList.add(teamUserVO);
         }
@@ -309,7 +305,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         Team team = getTeamById(id);
         Long teamId = team.getId();
         // 校验你是不是队伍的队长
-        if(team.getUserId() != loginUser.getId()){
+        if(!Objects.equals(team.getUserId(), loginUser.getId())){
             throw new BusinessException(ErrorCode.NO_AUTH, "无访问权限");
         }
         // 移除所有加入队伍的关联信息
