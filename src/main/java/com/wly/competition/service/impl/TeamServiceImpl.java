@@ -130,7 +130,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
         }
         // 不展示已过期的队伍
         // expireTime is null or expireTime > now()
-        queryWrapper.and(qw -> qw.gt("expireTime", new Date()).or().isNull("expireTime"));
+        queryWrapper.and(qw -> qw.ge("expireTime", new Date()).or().isNull("expireTime"));
         List<Team> teamList = this.list(queryWrapper);
         if(CollectionUtils.isEmpty(teamList)){
             return new ArrayList<>();
