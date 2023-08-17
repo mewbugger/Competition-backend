@@ -4,7 +4,9 @@ import com.wly.competition.common.ErrorCode;
 import com.wly.competition.common.ResultUtils;
 import com.wly.competition.exception.BusinessException;
 import com.wly.competition.model.domain.Competition;
+import com.wly.competition.model.domain.User;
 import com.wly.competition.model.dto.CompetitionQuery;
+import com.wly.competition.model.request.CompetitionJoinRequest;
 import com.wly.competition.service.CompetitionService;
 import com.wly.competition.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.transform.Result;
 import java.util.List;
 
 /**
@@ -47,6 +48,16 @@ public class CompetitionController {
 
 
         return ResultUtils.success(competitionList);
+    }
+
+    @PostMapping("/join")
+    public BaseResponse<Boolean> joinCompetition(@RequestBody CompetitionJoinRequest competitionJoinRequest, HttpServletRequest request){
+        if(competitionJoinRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean result = competitionService.joinCompetition(competitionJoinRequest, loginUser);
+        return ResultUtils.success(result);
     }
 
 
