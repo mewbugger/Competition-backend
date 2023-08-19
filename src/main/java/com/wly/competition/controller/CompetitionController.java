@@ -4,9 +4,11 @@ import com.wly.competition.common.ErrorCode;
 import com.wly.competition.common.ResultUtils;
 import com.wly.competition.exception.BusinessException;
 import com.wly.competition.model.domain.Competition;
+import com.wly.competition.model.domain.TeamCompetition;
 import com.wly.competition.model.domain.User;
 import com.wly.competition.model.dto.CompetitionQuery;
 import com.wly.competition.model.request.CompetitionJoinRequest;
+import com.wly.competition.model.vo.TeamCompetitionVO;
 import com.wly.competition.service.CompetitionService;
 import com.wly.competition.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,19 @@ public class CompetitionController {
         //查询竞赛列表
         List<Competition> competitionList = competitionService.listCompetitions(competitionQuery, isAdmin);
 
+
+        return ResultUtils.success(competitionList);
+    }
+
+    @GetMapping("/list1")
+    public BaseResponse<List<TeamCompetitionVO>> listCompetitions1(CompetitionQuery competitionQuery, HttpServletRequest request){
+        if(competitionQuery == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //判断当前用户是否为管理员
+        boolean isAdmin = userService.isAdmin(request);
+        //查询竞赛列表
+        List<TeamCompetitionVO> competitionList = competitionService.listCompetitions1(competitionQuery, request);
 
         return ResultUtils.success(competitionList);
     }

@@ -226,10 +226,12 @@ public class TeamController {
         //当前用户所加入的所有队伍的id
         ArrayList<Long> idList = new ArrayList<>(listMap.keySet());
         teamQuery.setIdList(idList);
+        //将管理员设置为true,来控制只查自己加入的队伍
         List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
         //查询已加入队伍的人数
         QueryWrapper<UserTeam> userTeamJoinQueryWrapper1 = new QueryWrapper<>();
         userTeamJoinQueryWrapper1.in("teamId", idList);
+        //userTeamJoinQueryWrapper1.eq("isDelete", (byte) 0);
         List<UserTeam> userTeamList1 = userTeamService.list(userTeamJoinQueryWrapper1);
         // 队伍 id => 加入这个队伍的用户列表
         Map<Long, List<UserTeam>> teamIdUserTeamList = userTeamList1.stream().collect(Collectors.groupingBy(UserTeam::getTeamId));

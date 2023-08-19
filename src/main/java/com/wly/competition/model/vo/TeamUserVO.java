@@ -38,7 +38,7 @@ public class TeamUserVO implements Serializable {
     private Date expireTime;
 
     /**
-     * 用户id
+     * 队长用户id
      */
     private Long userId;
 

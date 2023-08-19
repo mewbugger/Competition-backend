@@ -120,13 +120,19 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team>
             if(maxNum != null && maxNum > 0){
                 queryWrapper.eq("maxNum", maxNum);
             }
+            //用来查询当前用户创建的队伍
             Long userId = teamQuery.getUserId();
             if(userId != null && userId > 0){
                 queryWrapper.eq("userId", userId);
             }
-//            if (!isAdmin) {
-//                throw new BusinessException(ErrorCode.NO_AUTH);
-//            }
+            //用来查询当前队伍加入的队伍
+            List<Long> idList = teamQuery.getIdList();
+            if (isAdmin && idList != null) {
+//                for(Long teamId : teamQuery.getIdList()){
+//                    queryWrapper.eq("id", teamId);
+//                }
+                queryWrapper.in("id", idList);
+            }
         }
         // 不展示已过期的队伍
         // expireTime is null or expireTime > now()
