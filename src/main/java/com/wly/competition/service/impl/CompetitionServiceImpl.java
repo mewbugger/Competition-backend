@@ -8,6 +8,7 @@ import com.wly.competition.mapper.CompetitionMapper;
 import com.wly.competition.model.domain.*;
 import com.wly.competition.model.dto.CompetitionQuery;
 import com.wly.competition.model.request.CompetitionJoinRequest;
+import com.wly.competition.model.request.CompetitionQuitRequest;
 import com.wly.competition.model.vo.TeamCompetitionVO;
 import com.wly.competition.service.CompetitionService;
 import com.wly.competition.service.TeamCompetitionService;
@@ -15,10 +16,7 @@ import com.wly.competition.service.TeamService;
 import com.wly.competition.service.UserTeamService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -44,7 +42,7 @@ public class CompetitionServiceImpl extends ServiceImpl<CompetitionMapper, Compe
     private UserTeamService userTeamService;
 
     @Override
-    public List<Competition> listCompetitions(CompetitionQuery competitionQuery, boolean isAdmin) {
+    public List<TeamCompetitionVO> listCompetitions(CompetitionQuery competitionQuery, HttpServletRequest request) {
         QueryWrapper<Competition> queryWrapper = new QueryWrapper<>();
         //组合查询条件
         if(competitionQuery != null){
@@ -67,12 +65,82 @@ public class CompetitionServiceImpl extends ServiceImpl<CompetitionMapper, Compe
         if(CollectionUtils.isEmpty(competitionList)){
             return new ArrayList<>();
         }
-
-        return competitionList;
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        Long userId = user.getId();
+        List<TeamCompetitionVO> teamCompetitionVOList = new ArrayList<>();
+        List<TeamCompetition> teamCompetitionList = teamCompetitionService.list();
+        //用来判断当前遍历的竞赛是否加入到teamCompetitionVOList，因为查询的是所有竞赛，所以所有竞赛都需要添加到teamCompetitionVOList
+        boolean flag = false;
+        for(Competition competition : competitionList){
+            for(TeamCompetition teamCompetition : teamCompetitionList){
+                if(competition.getId().equals(teamCompetition.getCompetitionId())){
+                    //以队长的身份参加该竞赛
+                    if( userId.equals(teamCompetition.getUserId())) {
+                        TeamCompetitionVO teamCompetitionVO = new TeamCompetitionVO();
+                        //BeanUtils.copyProperties(competition, teamCompetitionVO);
+                        //teamCompetitionVO.setId(teamCompetition.getId());
+                        teamCompetitionVO.setCompetitionId(teamCompetition.getCompetitionId());
+                        teamCompetitionVO.setName(competition.getName());
+                        teamCompetitionVO.setLevel(competition.getLevel());
+                        teamCompetitionVO.setCreateTime(competition.getCreateTime());
+                        teamCompetitionVO.setExpireTime(competition.getExpireTime());
+                        //所在队伍是否参加比赛
+                        teamCompetitionVO.setHasJoin(true);
+                        //是否是所在队伍的队长
+                        teamCompetitionVO.setLeader(true);
+                        teamCompetitionVOList.add(teamCompetitionVO);
+                        flag = true;
+                        break;
+                    }else{
+                        //以队员的身份参加该竞赛
+                        QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();
+                        userTeamQueryWrapper.eq("teamId", teamCompetition.getTeamId());
+                        List<UserTeam> userTeamList = userTeamService.list(userTeamQueryWrapper);
+                        for(UserTeam userTeam : userTeamList){
+                            if(userId.equals(userTeam.getUserId())){
+                                TeamCompetitionVO teamCompetitionVO = new TeamCompetitionVO();
+                                //BeanUtils.copyProperties(competition, teamCompetitionVO);
+                                //teamCompetitionVO.setId(teamCompetition.getId());
+                                teamCompetitionVO.setCompetitionId(teamCompetition.getCompetitionId());
+                                teamCompetitionVO.setName(competition.getName());
+                                teamCompetitionVO.setLevel(competition.getLevel());
+                                teamCompetitionVO.setCreateTime(competition.getCreateTime());
+                                teamCompetitionVO.setExpireTime(competition.getExpireTime());
+                                //所在队伍是否参加比赛
+                                teamCompetitionVO.setHasJoin(true);
+                                //是否是所在队伍的队长
+                                teamCompetitionVO.setLeader(false);
+                                teamCompetitionVOList.add(teamCompetitionVO);
+                                flag = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if(!flag){
+                TeamCompetitionVO teamCompetitionVO = new TeamCompetitionVO();
+                //BeanUtils.copyProperties(competition, teamCompetitionVO);
+                //teamCompetitionVO.setId(teamCompetition.getId());
+                teamCompetitionVO.setCompetitionId(competition.getId());
+                teamCompetitionVO.setName(competition.getName());
+                teamCompetitionVO.setLevel(competition.getLevel());
+                teamCompetitionVO.setCreateTime(competition.getCreateTime());
+                teamCompetitionVO.setExpireTime(competition.getExpireTime());
+                //所在队伍是否参加比赛
+                teamCompetitionVO.setHasJoin(false);
+                //是否是所在队伍的队长
+                teamCompetitionVO.setLeader(false);
+                teamCompetitionVOList.add(teamCompetitionVO);
+            }
+            flag = false;
+        }
+        return teamCompetitionVOList;
     }
 
     @Override
-    public List<TeamCompetitionVO> listCompetitions1(CompetitionQuery competitionQuery, HttpServletRequest request) {
+    public List<TeamCompetitionVO> listMyJoinCompetitions(CompetitionQuery competitionQuery, HttpServletRequest request) {
 
         QueryWrapper<Competition> queryWrapper = new QueryWrapper<>();
         //组合查询条件
@@ -149,6 +217,30 @@ public class CompetitionServiceImpl extends ServiceImpl<CompetitionMapper, Compe
 
         }
         return teamCompetitionVOList;
+    }
+
+    @Override
+    public boolean quitCompetition(CompetitionQuitRequest competitionQuitRequest, HttpServletRequest request) {
+        if (competitionQuitRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User user = (User) userObj;
+        Long userId = user.getId();
+        Long competitionId = competitionQuitRequest.getCompetitionId();
+        String teamName = competitionQuitRequest.getTeamName();
+        QueryWrapper<Team> teamQueryWrapper = new QueryWrapper<>();
+        teamQueryWrapper.eq("name", teamName);
+        Team team = teamService.getOne(teamQueryWrapper);
+        if(team == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "该队伍不存在");
+        }
+        Long teamId = team.getId();
+        QueryWrapper<TeamCompetition> teamCompetitionQueryWrapper = new QueryWrapper<>();
+        teamCompetitionQueryWrapper.eq("userId", userId);
+        teamCompetitionQueryWrapper.eq("competitionId", competitionId);
+        teamCompetitionQueryWrapper.eq("teamId", teamId);
+        return teamCompetitionService.remove(teamCompetitionQueryWrapper);
     }
 
     @Override

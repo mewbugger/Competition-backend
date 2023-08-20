@@ -8,6 +8,7 @@ import com.wly.competition.model.domain.TeamCompetition;
 import com.wly.competition.model.domain.User;
 import com.wly.competition.model.dto.CompetitionQuery;
 import com.wly.competition.model.request.CompetitionJoinRequest;
+import com.wly.competition.model.request.CompetitionQuitRequest;
 import com.wly.competition.model.vo.TeamCompetitionVO;
 import com.wly.competition.service.CompetitionService;
 import com.wly.competition.service.UserService;
@@ -39,20 +40,20 @@ public class CompetitionController {
 
 
     @GetMapping("/list")
-    public BaseResponse<List<Competition>> listCompetitions(CompetitionQuery competitionQuery, HttpServletRequest request){
+    public BaseResponse<List<TeamCompetitionVO>> listCompetitions(CompetitionQuery competitionQuery, HttpServletRequest request){
         if(competitionQuery == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         //判断当前用户是否为管理员
         boolean isAdmin = userService.isAdmin(request);
         //查询竞赛列表
-        List<Competition> competitionList = competitionService.listCompetitions(competitionQuery, isAdmin);
+        List<TeamCompetitionVO> competitionList = competitionService.listCompetitions(competitionQuery, request);
 
 
         return ResultUtils.success(competitionList);
     }
 
-    @GetMapping("/list1")
+    @GetMapping("/list/my/join")
     public BaseResponse<List<TeamCompetitionVO>> listCompetitions1(CompetitionQuery competitionQuery, HttpServletRequest request){
         if(competitionQuery == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -60,7 +61,7 @@ public class CompetitionController {
         //判断当前用户是否为管理员
         boolean isAdmin = userService.isAdmin(request);
         //查询竞赛列表
-        List<TeamCompetitionVO> competitionList = competitionService.listCompetitions1(competitionQuery, request);
+        List<TeamCompetitionVO> competitionList = competitionService.listMyJoinCompetitions(competitionQuery, request);
 
         return ResultUtils.success(competitionList);
     }
@@ -72,6 +73,16 @@ public class CompetitionController {
         }
         User loginUser = userService.getLoginUser(request);
         boolean result = competitionService.joinCompetition(competitionJoinRequest, loginUser);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping("/quit")
+    public BaseResponse<Boolean> quitCompetition(@RequestBody CompetitionQuitRequest competitionQuitRequest, HttpServletRequest request){
+        if (competitionQuitRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        boolean result = competitionService.quitCompetition(competitionQuitRequest, request);
         return ResultUtils.success(result);
     }
 
