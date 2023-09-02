@@ -8,7 +8,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/suep_competition?serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-    password: wangleyan0735
+    password: 123456
   # session 失效时间（分钟）
   session:
     timeout: 86400
