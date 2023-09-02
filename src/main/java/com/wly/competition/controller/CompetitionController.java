@@ -45,7 +45,7 @@ public class CompetitionController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         //判断当前用户是否为管理员
-        boolean isAdmin = userService.isAdmin(request);
+        //boolean isAdmin = userService.isAdmin(request);
         //查询竞赛列表
         List<TeamCompetitionVO> competitionList = competitionService.listCompetitions(competitionQuery, request);
 

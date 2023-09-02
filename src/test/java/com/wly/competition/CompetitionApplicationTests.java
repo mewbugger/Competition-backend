@@ -28,25 +28,34 @@ class CompetitionApplicationTests {
 
     @Test
     void testLeetCode(){
-        int[] ratings = {1,0,2};
-        //数组元素默认为0
-        int[] candies = new int[ratings.length];
-        Arrays.fill(candies, 1);  // 将糖果数量初始化为1
-        int res = 0;
-        for(int i = 1; i < ratings.length; i++){
-            //右孩子比左孩子大
-            if(candies[i] > candies[i - 1]) candies[i] = candies[i - 1] + 1;
+        int[] heights = {2,1,5,6,2,3};
+        largestRectangleArea(heights);
+    }
+
+    public int largestRectangleArea(int[] heights) {
+        int len = heights.length;
+        int res = heights[0];
+        //当前搜索范围内最低柱子的索引
+        int low = heights[0];
+        int startIndex = 0;
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(0);
+        for(int i = 1; i < len; i++){
+            low = heights[startIndex];
+            for(int j = startIndex; j <= i; j++){
+                low = Math.min(low, heights[j]);
+            }
+            res = Math.max(res, low * (i - startIndex + 1));
+            while(!stack.isEmpty() && heights[i] > res ){
+                stack.pop();
+            }
+            if(stack.isEmpty()){
+                startIndex = i;
+            }
+            res = Math.max(res, heights[i]);
+            stack.push(i);
         }
-        for(int i = ratings.length - 2; i >= 0; i--){
-            //左孩子比右孩子大
-            if(ratings[i] > ratings[i + 1])
-                candies[i] = Math.max(candies[i], candies[i + 1] + 1);
-        }
-        for(int i = 0; i < candies.length; i++){
-            res += candies[i];
-            System.out.println(candies[i]);
-        }
-        System.out.println(res);
+        return res;
     }
 
 }

@@ -177,7 +177,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 如果是管理员，允许更新任意用户
         // 如果不是管理员，只允许更新当前（自己的）信息
-        if(!isAdmin(loginUser) && !Objects.equals(userId, loginUser.getId())){
+        if(!Objects.equals(userId, loginUser.getId())){
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
         User oldUser = userMapper.selectById(userId);

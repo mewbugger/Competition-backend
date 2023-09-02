@@ -3,7 +3,7 @@ package com.wly.competition.common;
 /**
  * 返回工具类
  *
- * @author yupi
+ *
  */
 public class ResultUtils {
 

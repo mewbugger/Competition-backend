@@ -108,9 +108,9 @@ public class TeamController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         //判断当前用户是否为管理员
-        boolean isAdmin = userService.isAdmin(request);
+        //boolean isAdmin = userService.isAdmin(request);
         //1.查询队伍列表
-        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, isAdmin);
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
         final List<Long> teamIdList = teamList.stream().map(TeamUserVO::getId).collect(Collectors.toList());
         //2.判断当前用户是否已经加入队伍
         QueryWrapper<UserTeam> userTeamQueryWrapper = new QueryWrapper<>();

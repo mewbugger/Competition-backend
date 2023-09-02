@@ -14,20 +14,24 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 /**
  * 自定义 Swagger 接口文档的配置
  *
- * @author yupi
+ *
  */
 @Configuration
 @EnableSwagger2WebMvc
 @Profile({"dev", "test"})
 public class SwaggerConfig {
 
+    /**
+     * 接口文档地址：http://localhost:8080/api/doc.html
+     * @return
+     */
     @Bean(value = "defaultApi2")
     public Docket defaultApi2() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
                 // 这里一定要标注你控制器的位置
-                .apis(RequestHandlerSelectors.basePackage("com.wly.suepcompetition.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.wly.competition.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
@@ -38,8 +42,8 @@ public class SwaggerConfig {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("suep竞赛与评审系统")
-                .description("鱼皮用户中心接口文档")
+                .title("竞赛与报名系统")
+                .description("竞赛与报名系统接口文档")
                 .version("1.0")
                 .build();
     }

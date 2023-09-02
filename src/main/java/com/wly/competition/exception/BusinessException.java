@@ -6,7 +6,7 @@ import com.wly.competition.common.ErrorCode;
 /**
  * 自定义异常类
  *
- * @author yupi
+ * @author
  */
 public class BusinessException extends RuntimeException {
 

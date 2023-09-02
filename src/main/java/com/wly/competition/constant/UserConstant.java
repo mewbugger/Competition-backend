@@ -3,7 +3,7 @@ package com.wly.competition.constant;
 /**
  * 用户常量
  *
- * @author yupi
+ *
  */
 public interface UserConstant {
 
