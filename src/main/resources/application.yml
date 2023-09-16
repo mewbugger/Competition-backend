@@ -6,7 +6,7 @@ spring:
   # DataSource Config
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/Competition_system?serverTimezone=Asia/Shanghai&useSSL=false
+    url: jdbc:mysql://localhost:3306/Competition_system?serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: javacppgorust
   # session 失效时间（分钟）
